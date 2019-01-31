@@ -8,4 +8,4 @@ from Package_Plugin.Tools.tl_XmlToolKit import XmlToolKit
 
 if __name__ == '__main__':
     # KKKToolKit.delete3KRes('/Users/suyghur/Android/abc/res')
-    KKKToolKit.delete3KStyle('/Users/suyghur/Android/abc/res/values/styles.xml')
+    KKKToolKit.delete3KString('/Users/suyghur/Android/abc/res/values/strings.xml')

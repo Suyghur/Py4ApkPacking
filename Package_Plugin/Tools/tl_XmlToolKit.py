@@ -76,7 +76,7 @@ class XmlToolKit:
             tree = ElementTree.parse(_manifestPath)
             manifest = tree.getroot()
             manifest.set('package', _packageName)
-            tree.write(_manifestPath)
+            tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
         except Exception, e:
             print 'updateManifestXmlPackageName fail , error msg : ' + str(e)
 
@@ -95,7 +95,7 @@ class XmlToolKit:
                 del manifest.attrib['platformBuildVersionName']
             manifest.set(XmlToolKit.__ANDROID_NS__ + 'versionCode', _versionCode)
             manifest.set(XmlToolKit.__ANDROID_NS__ + 'versionName', _versionName)
-            tree.write(_manifestPath)
+            tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
         except Exception, e:
             print 'updateManifestXmlVersionCode fail , error msg : ' + str(e)
 
@@ -107,7 +107,7 @@ class XmlToolKit:
             tree = ElementTree.parse(_manifestPath)
             application = tree.find('.//application')
             application.set(XmlToolKit.__ANDROID_NS__ + 'label', _newLabel)
-            tree.write(_manifestPath)
+            tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
         except Exception, e:
             print 'updateManifestXmlApplicationLabel fail , error msg : ' + str(e)
 
@@ -123,7 +123,8 @@ class XmlToolKit:
                 application.remove(activity)
             else:
                 print 'can not find the ' + _activityName
-            tree.write(_manifestPath)
+                return
+            tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
         except Exception, e:
             print 'removeManifestXmlActivity fail , error msg : ' + str(e)
 
@@ -139,7 +140,8 @@ class XmlToolKit:
                 application.remove(service)
             else:
                 print 'can not find the ' + _serviceName
-            tree.write(_manifestPath)
+                return
+            tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
         except Exception, e:
             print 'removeManifestXmlService fail , error msg : ' + str(e)
 
@@ -155,7 +157,8 @@ class XmlToolKit:
                 application.remove(receiver)
             else:
                 print 'can not find the ' + _receiverName
-            tree.write(_manifestPath)
+                return
+            tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
         except Exception, e:
             print 'removeManifestXmlReceiver fail , error msg : ' + str(e)
 
@@ -171,7 +174,8 @@ class XmlToolKit:
                 application.remove(provider)
             else:
                 print 'can not find the ' + _providerName
-            tree.write(_manifestPath)
+                return
+            tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
         except Exception, e:
             print 'removeManifestXmlProvider fail , error msg : ' + str(e)
 
@@ -189,14 +193,6 @@ class XmlToolKit:
                                         XmlToolKit.__ANDROID_NS__ + 'value': _metaDataValue})
             else:
                 metaData.set(XmlToolKit.__ANDROID_NS__ + 'value', _metaDataValue)
-            tree.write(_manifestPath)
+            tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
         except Exception, e:
             print 'updateManifestXmlMetaDataValue fail , error msg : ' + str(e)
-
-    @staticmethod
-    def dealXml(_xmlPath, _fileType):
-        try:
-            tree = ElementTree.parse(_xmlPath)
-            ElementTree.dump(tree)
-        except Exception, e:
-            print 'dealXml' + str(e)
