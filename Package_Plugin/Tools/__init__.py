@@ -8,4 +8,4 @@ from Package_Plugin.Tools.tl_XmlToolKit import XmlToolKit
 
 if __name__ == '__main__':
     # KKKToolKit.delete3KRes('/Users/suyghur/Android/abc/res')
-    KKKToolKit.addGmPageActivity('/Users/suyghur/Android/AndroidManifest.xml')
+    KKKToolKit.updateManifestXmlGameId('/Users/suyghur/Android/AndroidManifest.xml', '100')

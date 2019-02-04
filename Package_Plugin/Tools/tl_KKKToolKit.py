@@ -103,19 +103,48 @@ class KKKToolKit:
 
     @staticmethod
     def remove3KMetaData(_manifestPath):
-        pass
+        ElementTree.register_namespace('android', KKKToolKit.__ANDROID_NS__WRITE__)
+        tree = ElementTree.parse(_manifestPath)
+        application = tree.find('.//application')
+        metaData = application.findall('./meta-data')
+        originName = ['3KWAN_Appkey', '3KWAN_ChanleId', '3KWAN_AppID', '3KWAN_Platform_ChanleId', '3KWAN_HasLogo']
+        name = []
+        # 减少比较次数
+        for item in metaData:
+            name.append(item.get(KKKToolKit.__ANDROID_NS__ + 'name'))
+        for i in originName:
+            if i in name:
+                application.remove(metaData[name.index(i)])
+        tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
 
     @staticmethod
     def updateManifestXmlGameId(_manifestPath, _gameId):
-        pass
+        ElementTree.register_namespace('android', KKKToolKit.__ANDROID_NS__WRITE__)
+        tree = ElementTree.parse(_manifestPath)
+        application = tree.find('.//application')
+        metaData = application.find("./meta-data[@" + KKKToolKit.__ANDROID_NS__ + "name='3KWAN_GAMEID']")
+        metaData.set(KKKToolKit.__ANDROID_NS__ + 'value', _gameId)
+        tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
 
     @staticmethod
     def updateManifestXmlGameName(_manifestPath, _gameName):
-        pass
+        ElementTree.register_namespace('android', KKKToolKit.__ANDROID_NS__WRITE__)
+        tree = ElementTree.parse(_manifestPath)
+        application = tree.find('.//application')
+        metaData = application.find("./meta-data[@" + KKKToolKit.__ANDROID_NS__ + "name='3KWAN_GAMENAME']")
+        metaData.set(KKKToolKit.__ANDROID_NS__ + 'value', _gameName)
+        tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
 
     @staticmethod
-    def deal3KChanleId(_channelConfig):
-        pass
+    def deal3KChanleId(_manifestPath, _ChanleId, _PackageId):
+        ElementTree.register_namespace('android', KKKToolKit.__ANDROID_NS__WRITE__)
+        tree = ElementTree.parse(_manifestPath)
+        application = tree.find('.//application')
+        chanleId = application.find("./meta-data[@" + KKKToolKit.__ANDROID_NS__ + "name='3KWAN_ChanleId']")
+        packageId = application.find("./meta-data[@" + KKKToolKit.__ANDROID_NS__ + "name='3KWAN_PackageID']")
+        chanleId.set(KKKToolKit.__ANDROID_NS__ + 'value', _ChanleId)
+        packageId.set(KKKToolKit.__ANDROID_NS__ + 'value', _PackageId)
+        tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
 
     @staticmethod
     def delete3KRes(_resPath):
