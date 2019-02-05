@@ -5,7 +5,7 @@
 import abc
 
 
-class BaseChannel():
+class BaseChannel:
     __metaclass__ = abc.ABCMeta
 
     # 复制渠道资源
