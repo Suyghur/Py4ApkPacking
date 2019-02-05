@@ -80,12 +80,12 @@ if __name__ == '__main__':
 
     # ------ 使用时加载 ------
     manager = PluginsManager()
-    med1 = manager.DynamicLoadingPlugin('Plugin1', 'Plugin1')
-    med1().PluginPrint()
+    mod1 = manager.DynamicLoadingPlugin('Plugin1', 'Plugin1')
+    mod1().PluginPrint()
 
     # ------ 启动时加载 ------
-    med2 = manager.PreLoadingPlugin('Plugin2', 'Plugin2')
-    med2().PluginPrintWithParam('123')
+    mod2 = manager.PreLoadingPlugin('Plugin2', 'Plugin2')
+    mod2().PluginPrintWithParam('123')
 ```
 
 
