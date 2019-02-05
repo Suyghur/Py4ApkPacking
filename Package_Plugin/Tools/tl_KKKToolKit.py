@@ -4,6 +4,8 @@
 # Description : the toolkit of 3K_OriginPackage
 import os
 
+from Package_Plugin.mod_GlobalStaticVars import GlobalStaticVars
+
 try:
     import xml.etree.cElementTree as ElementTree
 except ImportError:
@@ -13,10 +15,6 @@ from Package_Plugin.Tools import FileToolKit
 
 
 class KKKToolKit:
-    # 读取某个属性时方便所以加上{}
-    __ANDROID_NS__ = '{http://schemas.android.com/apk/res/android}'
-
-    __ANDROID_NS__WRITE__ = 'http://schemas.android.com/apk/res/android'
 
     def __init__(self):
         pass
@@ -44,23 +42,24 @@ class KKKToolKit:
 
     @staticmethod
     def addGmPageActivity(_manifestPath):
-        ElementTree.register_namespace('android', KKKToolKit.__ANDROID_NS__WRITE__)
+        ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
         tree = ElementTree.parse(_manifestPath)
         application = tree.find('.//application')
         gmPageActivity = application.find(
-            "./activity[@" + KKKToolKit.__ANDROID_NS__ + "name='cn.kkk.commonsdk.GmPageActivity']")
+            "./activity[@" + GlobalStaticVars.__ANDROID_NS__ + "name='cn.kkk.commonsdk.GmPageActivity']")
         if gmPageActivity is None:
-            ElementTree.SubElement(application, 'activity',
-                                   {KKKToolKit.__ANDROID_NS__ + 'name': 'cn.kkk.commonsdk.GmPageActivity',
-                                    KKKToolKit.__ANDROID_NS__ + 'screenOrientation': 'portrait',
-                                    KKKToolKit.__ANDROID_NS__ + 'configChanges': 'orientation|screenSize|keyboardHidden',
-                                    KKKToolKit.__ANDROID_NS__ + 'theme': '@android:style/Theme.Light',
-                                    KKKToolKit.__ANDROID_NS__ + 'windowSoftInputMode': 'adjustResize'})
+            ElementTree.SubElement(application, 'activity', {
+                GlobalStaticVars.__ANDROID_NS__ + 'name': 'cn.kkk.commonsdk.GmPageActivity',
+                GlobalStaticVars.__ANDROID_NS__ + 'screenOrientation': 'portrait',
+                GlobalStaticVars.__ANDROID_NS__ + 'configChanges': 'orientation|screenSize|keyboardHidden',
+                GlobalStaticVars.__ANDROID_NS__ + 'theme': '@android:style/Theme.Light',
+                GlobalStaticVars.__ANDROID_NS__ + 'windowSoftInputMode': 'adjustResize'})
         else:
-            gmPageActivity.set(KKKToolKit.__ANDROID_NS__ + 'screenOrientation', 'portrait')
-            gmPageActivity.set(KKKToolKit.__ANDROID_NS__ + 'configChanges', 'orientation|screenSize|keyboardHidden')
-            gmPageActivity.set(KKKToolKit.__ANDROID_NS__ + 'theme', '@android:style/Theme.Light')
-            gmPageActivity.set(KKKToolKit.__ANDROID_NS__ + 'windowSoftInputMode', 'adjustResize')
+            gmPageActivity.set(GlobalStaticVars.__ANDROID_NS__ + 'screenOrientation', 'portrait')
+            gmPageActivity.set(GlobalStaticVars.__ANDROID_NS__ + 'configChanges',
+                               'orientation|screenSize|keyboardHidden')
+            gmPageActivity.set(GlobalStaticVars.__ANDROID_NS__ + 'theme', '@android:style/Theme.Light')
+            gmPageActivity.set(GlobalStaticVars.__ANDROID_NS__ + 'windowSoftInputMode', 'adjustResize')
         tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
 
     @staticmethod
@@ -69,41 +68,42 @@ class KKKToolKit:
             screenOrientation = 'landscape'
         else:
             screenOrientation = 'portrait'
-        ElementTree.register_namespace('android', KKKToolKit.__ANDROID_NS__WRITE__)
+        ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
         tree = ElementTree.parse(_manifestPath)
         application = tree.find('.//application')
         grantActivity = application.find(
-            "./activity[@" + KKKToolKit.__ANDROID_NS__ + "name='cn.impl.common.util.PermissionsGrantActivity']")
+            "./activity[@" + GlobalStaticVars.__ANDROID_NS__ + "name='cn.impl.common.util.PermissionsGrantActivity']")
         if grantActivity is None:
-            ElementTree.SubElement(application, 'activity',
-                                   {KKKToolKit.__ANDROID_NS__ + 'name': 'cn.impl.common.util.PermissionsGrantActivity',
-                                    KKKToolKit.__ANDROID_NS__ + 'screenOrientation': screenOrientation,
-                                    KKKToolKit.__ANDROID_NS__ + 'configChanges': 'orientation|screenSize|keyboardHidden'})
+            ElementTree.SubElement(application, 'activity', {
+                GlobalStaticVars.__ANDROID_NS__ + 'name': 'cn.impl.common.util.PermissionsGrantActivity',
+                GlobalStaticVars.__ANDROID_NS__ + 'screenOrientation': screenOrientation,
+                GlobalStaticVars.__ANDROID_NS__ + 'configChanges': 'orientation|screenSize|keyboardHidden'})
         else:
-            grantActivity.set(KKKToolKit.__ANDROID_NS__ + 'screenOrientation', screenOrientation)
-            grantActivity.set(KKKToolKit.__ANDROID_NS__ + 'configChanges', 'orientation|screenSize|keyboardHidden')
+            grantActivity.set(GlobalStaticVars.__ANDROID_NS__ + 'screenOrientation', screenOrientation)
+            grantActivity.set(GlobalStaticVars.__ANDROID_NS__ + 'configChanges',
+                              'orientation|screenSize|keyboardHidden')
         tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
 
     @staticmethod
     def addWelcomeActivity(_manifestPath):
-        ElementTree.register_namespace('android', KKKToolKit.__ANDROID_NS__WRITE__)
+        ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
         tree = ElementTree.parse(_manifestPath)
         application = tree.find('.//application')
         # WelcomeAcitivity???
         welcomeActivity = application.find(
-            "./activity[@" + KKKToolKit.__ANDROID_NS__ + "name='cn.kkk.commonsdk.WelcomeAcitivity']")
+            "./activity[@" + GlobalStaticVars.__ANDROID_NS__ + "name='cn.kkk.commonsdk.WelcomeAcitivity']")
         if welcomeActivity is None:
-            ElementTree.SubElement(application, 'activity',
-                                   {KKKToolKit.__ANDROID_NS__ + 'name': 'cn.kkk.commonsdk.WelcomeAcitivity',
-                                    KKKToolKit.__ANDROID_NS__ + 'configChanges': 'keyboard|keyboardHidden|layoutDirection|navigation|orientation|screenLayout|screenSize|smallestScreenSize'})
+            ElementTree.SubElement(application, 'activity', {
+                GlobalStaticVars.__ANDROID_NS__ + 'name': 'cn.kkk.commonsdk.WelcomeAcitivity',
+                GlobalStaticVars.__ANDROID_NS__ + 'configChanges': 'keyboard|keyboardHidden|layoutDirection|navigation|orientation|screenLayout|screenSize|smallestScreenSize'})
         else:
-            welcomeActivity.set(KKKToolKit.__ANDROID_NS__ + 'configChanges',
+            welcomeActivity.set(GlobalStaticVars.__ANDROID_NS__ + 'configChanges',
                                 'keyboard|keyboardHidden|layoutDirection|navigation|orientation|screenLayout|screenSize|smallestScreenSize')
         tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
 
     @staticmethod
     def remove3KMetaData(_manifestPath):
-        ElementTree.register_namespace('android', KKKToolKit.__ANDROID_NS__WRITE__)
+        ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
         tree = ElementTree.parse(_manifestPath)
         application = tree.find('.//application')
         metaData = application.findall('./meta-data')
@@ -111,7 +111,7 @@ class KKKToolKit:
         name = []
         # 减少比较次数
         for item in metaData:
-            name.append(item.get(KKKToolKit.__ANDROID_NS__ + 'name'))
+            name.append(item.get(GlobalStaticVars.__ANDROID_NS__ + 'name'))
         for i in originName:
             if i in name:
                 application.remove(metaData[name.index(i)])
@@ -119,31 +119,31 @@ class KKKToolKit:
 
     @staticmethod
     def updateManifestXmlGameId(_manifestPath, _gameId):
-        ElementTree.register_namespace('android', KKKToolKit.__ANDROID_NS__WRITE__)
+        ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
         tree = ElementTree.parse(_manifestPath)
         application = tree.find('.//application')
-        metaData = application.find("./meta-data[@" + KKKToolKit.__ANDROID_NS__ + "name='3KWAN_GAMEID']")
-        metaData.set(KKKToolKit.__ANDROID_NS__ + 'value', _gameId)
+        metaData = application.find("./meta-data[@" + GlobalStaticVars.__ANDROID_NS__ + "name='3KWAN_GAMEID']")
+        metaData.set(GlobalStaticVars.__ANDROID_NS__ + 'value', _gameId)
         tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
 
     @staticmethod
     def updateManifestXmlGameName(_manifestPath, _gameName):
-        ElementTree.register_namespace('android', KKKToolKit.__ANDROID_NS__WRITE__)
+        ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
         tree = ElementTree.parse(_manifestPath)
         application = tree.find('.//application')
-        metaData = application.find("./meta-data[@" + KKKToolKit.__ANDROID_NS__ + "name='3KWAN_GAMENAME']")
-        metaData.set(KKKToolKit.__ANDROID_NS__ + 'value', _gameName)
+        metaData = application.find("./meta-data[@" + GlobalStaticVars.__ANDROID_NS__ + "name='3KWAN_GAMENAME']")
+        metaData.set(GlobalStaticVars.__ANDROID_NS__ + 'value', _gameName)
         tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
 
     @staticmethod
     def deal3KChanleId(_manifestPath, _ChanleId, _PackageId):
-        ElementTree.register_namespace('android', KKKToolKit.__ANDROID_NS__WRITE__)
+        ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
         tree = ElementTree.parse(_manifestPath)
         application = tree.find('.//application')
-        chanleId = application.find("./meta-data[@" + KKKToolKit.__ANDROID_NS__ + "name='3KWAN_ChanleId']")
-        packageId = application.find("./meta-data[@" + KKKToolKit.__ANDROID_NS__ + "name='3KWAN_PackageID']")
-        chanleId.set(KKKToolKit.__ANDROID_NS__ + 'value', _ChanleId)
-        packageId.set(KKKToolKit.__ANDROID_NS__ + 'value', _PackageId)
+        chanleId = application.find("./meta-data[@" + GlobalStaticVars.__ANDROID_NS__ + "name='3KWAN_ChanleId']")
+        packageId = application.find("./meta-data[@" + GlobalStaticVars.__ANDROID_NS__ + "name='3KWAN_PackageID']")
+        chanleId.set(GlobalStaticVars.__ANDROID_NS__ + 'value', _ChanleId)
+        packageId.set(GlobalStaticVars.__ANDROID_NS__ + 'value', _PackageId)
         tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
 
     @staticmethod

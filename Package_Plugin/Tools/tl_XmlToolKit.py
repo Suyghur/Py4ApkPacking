@@ -2,6 +2,10 @@
 # Created by #Suyghur, on 2019-01-14.
 # Copyright (c) 2019 3KWan.
 # Description : the toolkit of XML
+import os
+
+from Package_Plugin.mod_GlobalStaticVars import GlobalStaticVars
+
 try:
     import xml.etree.cElementTree as ElementTree
 except ImportError:
@@ -9,10 +13,6 @@ except ImportError:
 
 
 class XmlToolKit:
-    # 读取某个属性时方便所以加上{}
-    __ANDROID_NS__ = '{http://schemas.android.com/apk/res/android}'
-
-    __ANDROID_NS__WRITE__ = 'http://schemas.android.com/apk/res/android'
 
     def __init__(self):
         pass
@@ -45,7 +45,7 @@ class XmlToolKit:
         try:
             manifest = XmlToolKit.loadManifest(_manifestPath)
             application = manifest.find('application')
-            return application.get(XmlToolKit.__ANDROID_NS__ + 'name')
+            return application.get(GlobalStaticVars.__ANDROID_NS__ + 'name')
         except Exception, e:
             print 'getManifestXmlApplicationName fail , error msg : ' + str(e)
 
@@ -55,7 +55,7 @@ class XmlToolKit:
         try:
             manifest = XmlToolKit.loadManifest(_manifestPath)
             application = manifest.find('application')
-            return application.get(XmlToolKit.__ANDROID_NS__ + 'label')[8:]
+            return application.get(GlobalStaticVars.__ANDROID_NS__ + 'label')[8:]
         except Exception, e:
             print 'getManifestAppName fail , error msg : ' + str(e)
 
@@ -65,7 +65,7 @@ class XmlToolKit:
         try:
             manifest = XmlToolKit.loadManifest(_manifestPath)
             application = manifest.find('application')
-            return application.get(XmlToolKit.__ANDROID_NS__ + 'icon')[10:]
+            return application.get(GlobalStaticVars.__ANDROID_NS__ + 'icon')[10:]
         except Exception, e:
             print 'getManifestXmlIconNameValue fail , error msg : ' + str(e)
 
@@ -84,7 +84,7 @@ class XmlToolKit:
     @staticmethod
     def updateManifestXmlVersionCodeAndName(_manifestPath, _versionCode, _versionName):
         try:
-            ElementTree.register_namespace('android', XmlToolKit.__ANDROID_NS__WRITE__)
+            ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
             tree = ElementTree.parse(_manifestPath)
             manifest = tree.getroot()
             if 'platformBuildVersionCode' in manifest.attrib:
@@ -93,8 +93,8 @@ class XmlToolKit:
             if 'platformBuildVersionName' in manifest.attrib:
                 print 'delete platformBuildVersionName'
                 del manifest.attrib['platformBuildVersionName']
-            manifest.set(XmlToolKit.__ANDROID_NS__ + 'versionCode', _versionCode)
-            manifest.set(XmlToolKit.__ANDROID_NS__ + 'versionName', _versionName)
+            manifest.set(GlobalStaticVars.__ANDROID_NS__ + 'versionCode', _versionCode)
+            manifest.set(GlobalStaticVars.__ANDROID_NS__ + 'versionName', _versionName)
             tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
         except Exception, e:
             print 'updateManifestXmlVersionCode fail , error msg : ' + str(e)
@@ -103,10 +103,10 @@ class XmlToolKit:
     @staticmethod
     def updateManifestXmlApplicationLabel(_manifestPath, _newLabel):
         try:
-            ElementTree.register_namespace('android', XmlToolKit.__ANDROID_NS__WRITE__)
+            ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
             tree = ElementTree.parse(_manifestPath)
             application = tree.find('.//application')
-            application.set(XmlToolKit.__ANDROID_NS__ + 'label', _newLabel)
+            application.set(GlobalStaticVars.__ANDROID_NS__ + 'label', _newLabel)
             tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
         except Exception, e:
             print 'updateManifestXmlApplicationLabel fail , error msg : ' + str(e)
@@ -115,10 +115,11 @@ class XmlToolKit:
     @staticmethod
     def removeManifestXmlActivity(_manifestPath, _activityName):
         try:
-            ElementTree.register_namespace('android', XmlToolKit.__ANDROID_NS__WRITE__)
+            ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
             tree = ElementTree.parse(_manifestPath)
             application = tree.find('.//application')
-            activity = application.find("./activity[@" + XmlToolKit.__ANDROID_NS__ + "name'" + _activityName + "']")
+            activity = application.find(
+                "./activity[@" + GlobalStaticVars.__ANDROID_NS__ + "name'" + _activityName + "']")
             if activity is not None:
                 application.remove(activity)
             else:
@@ -132,10 +133,10 @@ class XmlToolKit:
     @staticmethod
     def removeManifestXmlService(_manifestPath, _serviceName):
         try:
-            ElementTree.register_namespace('android', XmlToolKit.__ANDROID_NS__WRITE__)
+            ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
             tree = ElementTree.parse(_manifestPath)
             application = tree.find('.//application')
-            service = application.find("./service[@" + XmlToolKit.__ANDROID_NS__ + "name'" + _serviceName + "']")
+            service = application.find("./service[@" + GlobalStaticVars.__ANDROID_NS__ + "name'" + _serviceName + "']")
             if service is not None:
                 application.remove(service)
             else:
@@ -149,10 +150,11 @@ class XmlToolKit:
     @staticmethod
     def removeManifestXmlReceiver(_manifestPath, _receiverName):
         try:
-            ElementTree.register_namespace('android', XmlToolKit.__ANDROID_NS__WRITE__)
+            ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
             tree = ElementTree.parse(_manifestPath)
             application = tree.find('.//application')
-            receiver = application.find("./receiver[@" + XmlToolKit.__ANDROID_NS__ + "name'" + _receiverName + "']")
+            receiver = application.find(
+                "./receiver[@" + GlobalStaticVars.__ANDROID_NS__ + "name'" + _receiverName + "']")
             if receiver is not None:
                 application.remove(receiver)
             else:
@@ -166,10 +168,11 @@ class XmlToolKit:
     @staticmethod
     def removeManifestXmlProvider(_manifestPath, _providerName):
         try:
-            ElementTree.register_namespace('android', XmlToolKit.__ANDROID_NS__WRITE__)
+            ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
             tree = ElementTree.parse(_manifestPath)
             application = tree.find('.//application')
-            provider = application.find("./provider[@" + XmlToolKit.__ANDROID_NS__ + "name'" + _providerName + "']")
+            provider = application.find(
+                "./provider[@" + GlobalStaticVars.__ANDROID_NS__ + "name'" + _providerName + "']")
             if provider is not None:
                 application.remove(provider)
             else:
@@ -183,16 +186,49 @@ class XmlToolKit:
     @staticmethod
     def updateManifestXmlMetaDataValue(_manifestPath, _metaDataName, _metaDataValue):
         try:
-            ElementTree.register_namespace('android', XmlToolKit.__ANDROID_NS__WRITE__)
+            ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
             tree = ElementTree.parse(_manifestPath)
             application = tree.find('.//application')
-            metaData = application.find("./meta-data[@" + XmlToolKit.__ANDROID_NS__ + "name='" + _metaDataName + "']")
+            metaData = application.find(
+                "./meta-data[@" + GlobalStaticVars.__ANDROID_NS__ + "name='" + _metaDataName + "']")
             if metaData is None:
                 ElementTree.SubElement(application, 'meta-data',
-                                       {XmlToolKit.__ANDROID_NS__ + 'name': _metaDataName,
-                                        XmlToolKit.__ANDROID_NS__ + 'value': _metaDataValue})
+                                       {GlobalStaticVars.__ANDROID_NS__ + 'name': _metaDataName,
+                                        GlobalStaticVars.__ANDROID_NS__ + 'value': _metaDataValue})
             else:
-                metaData.set(XmlToolKit.__ANDROID_NS__ + 'value', _metaDataValue)
+                metaData.set(GlobalStaticVars.__ANDROID_NS__ + 'value', _metaDataValue)
             tree.write(_manifestPath, xml_declaration=True, encoding='utf-8', method='xml')
         except Exception, e:
             print 'updateManifestXmlMetaDataValue fail , error msg : ' + str(e)
+
+    # 筛选母包和渠道的xml文件
+    @staticmethod
+    def dealValuesXml():
+        try:
+            values = ['string', 'color', 'dimen', 'style']
+            for xml in os.listdir(GlobalStaticVars.__OUTPUT_RES_PATH__ + '/values'):
+                if 'origin' not in xml:
+                    for i in values:
+                        if i in xml:
+                            origin = GlobalStaticVars.__OUTPUT_RES_PATH__ + '/values/origin_' + i + 's.xml'
+                            channel = GlobalStaticVars.__OUTPUT_RES_PATH__ + '/values/' + i + 's.xml'
+                            XmlToolKit.checkValuesXml(origin, channel, i)
+        except Exception, e:
+            print 'dealValuesXml fail , error msg : ' + str(e)
+
+    # 处理values下xml中的重复字段
+    @staticmethod
+    def checkValuesXml(_originXml, _channelXml, _flag):
+        try:
+            ElementTree.register_namespace('android', GlobalStaticVars.__ANDROID_NS__WRITE__)
+            originTree = ElementTree.parse(_originXml)
+            channelTree = ElementTree.parse(_channelXml)
+            originResources = originTree.getroot()
+            channelResources = channelTree.getroot()
+            for channelItem in channelResources.findall(_flag):
+                for originItem in originResources.findall(_flag):
+                    if channelItem.get('name') == originItem.get('name'):
+                        originItem.set('name', originItem.get('name') + '1')
+            originTree.write(_originXml, xml_declaration=True, encoding='utf-8', method='xml')
+        except Exception, e:
+            print 'dealValuesXml fail , error msg : ' + str(e)
