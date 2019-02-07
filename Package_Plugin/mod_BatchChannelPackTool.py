@@ -3,7 +3,7 @@
 # Copyright (c) 2019 3KWan.
 # Description :
 from Package_Plugin.Channels import *
-from Package_Plugin.Tools.tl_ApktoolKit import ApktoolKit
+from Package_Plugin.Tools.tl_ApkToolKit import ApkToolKit
 from Package_Plugin.Tools.tl_KKKToolKit import KKKToolKit
 
 
@@ -21,7 +21,7 @@ class BatchChannelPackTool:
     def prePackingEnv():
         # 反编译母包
         print '反编译母包'
-        if ApktoolKit.decompileApk('a', 'b', 'c'):
+        if ApkToolKit.decompileApk('a', 'b', 'c'):
             print '反编译母包成功'
         else:
             print '反编译母包失败'

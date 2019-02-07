@@ -15,9 +15,12 @@ class GlobalStaticVars:
 
     __PROJECT_PATH__ = ''
     __PROJECT_TEMP_PATH__ = ''
+    __PROJECT_TEMP_R_PATH__ = ''
     __APKS_PATH__ = ''
     __RES_PATH__ = ''
     __TOOLS_PATH__ = ''
+    __APKTOOL_JAR_PATH__ = './local/bin'
+
 
     # 输出目录
     __OUTPUT_PATH__ = __PROJECT_PATH__ + '/out'
