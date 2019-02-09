@@ -6,4 +6,4 @@
 from Package_Plugin.mod_GlobalStaticVars import GlobalStaticVars
 
 if __name__ == '__main__':
-    print GlobalStaticVars.__OUTPUT_PATH__
+    pass
