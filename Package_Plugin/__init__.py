@@ -3,8 +3,7 @@
 # Copyright (c) 2019 3KWan.
 # Description : Package_Plugin unit test
 
-from Package_Plugin.mod_BatchChannelPackTool import BatchChannelPackTool
+from Package_Plugin.mod_GlobalStaticVars import GlobalStaticVars
 
 if __name__ == '__main__':
-    testChannel = BatchChannelPackTool.checkPlatform('12')
-    print type(testChannel)
+    print GlobalStaticVars.__OUTPUT_PATH__
