@@ -14,7 +14,7 @@ class ApkToolKit:
     @staticmethod
     def decompileApk(_apkPath, _apkOutPath, _apkJarPath=None):
         if _apkJarPath is None:
-            _apkJarPath += GlobalStaticVars.__APKTOOL_JAR_PATH__
+            _apkJarPath += GlobalStaticVars.__TOOLS_APKTOOL_JAR_PATH__
         print 'doing decompileApk'
 
         bashScript = 'java -jar ' + _apkJarPath + ' d -f ' + _apkPath + ' -o ' + _apkOutPath
@@ -27,7 +27,7 @@ class ApkToolKit:
     @staticmethod
     def compileApk(_apkFolderPath, _apkOutPath, _apkJarPath=None):
         if _apkJarPath is None:
-            _apkJarPath = GlobalStaticVars.__APKTOOL_JAR_PATH__
+            _apkJarPath = GlobalStaticVars.__TOOLS_APKTOOL_JAR_PATH__
 
         print 'doing compileApk'
 

@@ -4,6 +4,8 @@
 # Description : the base channel clz
 import abc
 
+from Package_Plugin.Tools.tl_ApkToolKit import ApkToolKit
+
 
 class BaseChannel:
     __metaclass__ = abc.ABCMeta
@@ -74,7 +76,7 @@ class BaseChannel:
     # 重编译
     @staticmethod
     def reCompile():
-        print 'reCompile'
+        #if ApkToolKit.compileApk()
         return True
 
     # 重签名

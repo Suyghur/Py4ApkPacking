@@ -1,10 +1,9 @@
 # _*_coding:utf-8_*_
-# Created by #Suyghur, on 2019-02-06.
+# Created by #Suyghur, on 2019-02-09.
 # Copyright (c) 2019 3KWan.
-# Description : Special handling of games
+# Description : special handing of games
 
 
 class SpecialHandleToolKit:
-
     def __init__(self):
         pass
