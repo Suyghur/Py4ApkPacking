@@ -2,10 +2,18 @@
 # Created by #Suyghur, on 2019-01-12.
 # Copyright (c) 2019 3KWan.
 # Description : Oppo channel packaging impl clz
+from Package_Plugin import GlobalStaticVars
 from Package_Plugin.Channels.ch_BaseChannel import BaseChannel
 
 
 class OppoChannel(BaseChannel):
+    __CHANNEL_PATH__ = GlobalStaticVars.__PROJECT_RES_CHANNEL_PATH__ + '/oppo'
+    __ASSETS_PATH__ = __CHANNEL_PATH__ + '/assets'
+    __LIB_PATH__ = __CHANNEL_PATH__ + '/lib'
+    __RES_PATH__ = __CHANNEL_PATH__ + '/res'
+    __SMALI_PATH__ = __CHANNEL_PATH__ + '/smali'
+    __PERMISSION_PATH__ = __CHANNEL_PATH__ + '/config/permission.xml'
+    __APPLICATION_PATH = __CHANNEL_PATH__ + '/config/application.xml'
 
     def __init__(self):
         print 'OppoChannel Packing'

@@ -4,7 +4,9 @@
 # Description : the base channel clz
 import abc
 
+from Package_Plugin import GlobalStaticVars
 from Package_Plugin.Tools.tl_ApkToolKit import ApkToolKit
+from Package_Plugin.Tools.tl_FileToolKit import FileToolKit
 
 
 class BaseChannel:
@@ -76,17 +78,30 @@ class BaseChannel:
     # 重编译
     @staticmethod
     def reCompile():
-        #if ApkToolKit.compileApk()
-        return True
+        if ApkToolKit.compileApk(GlobalStaticVars.__OUTPUT_PATH__, GlobalStaticVars.__APKS_PATH__):
+            print 'reCompile success'
+            return True
+        else:
+            print 'reCompile fail'
+            return False
 
     # 重签名
     @staticmethod
     def reSigned(_apkLabel, _signFilePath, _signPwd, _signFileAlias):
-        print 'reSigned'
-        return True
+        if ApkToolKit.signedApk(GlobalStaticVars.__APKS_PATH__, GlobalStaticVars.__APKS_PATH__ + '/' + _apkLabel,
+                                _signFilePath, _signPwd, _signFileAlias):
+            print 'reSigned success'
+            return True
+        else:
+            print 'reSigned fail'
+            return False
 
     # 清除临时文件
     @staticmethod
     def clearTempFile():
-        print 'clearTempFile'
-        return True
+        if FileToolKit.deleteFile(GlobalStaticVars.__APKS_PATH__):
+            print 'clearTempFile success'
+            return True
+        else:
+            print 'clearTempFile fail'
+            return False
