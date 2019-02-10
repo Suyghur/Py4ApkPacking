@@ -35,7 +35,7 @@ class GlobalStaticVars:
     __OUTPUT_ASSETS_PATH__ = __OUTPUT_PATH__ + '/assets'
     __OUTPUT_RES_PATH__ = __OUTPUT_PATH__ + '/res'
     __OUTPUT_LIB_PATH__ = __OUTPUT_PATH__ + '/lib'
-    __OUTPUT_SMALI_PATH = __OUTPUT_PATH__ + '/smali'
+    __OUTPUT_SMALI_PATH__ = __OUTPUT_PATH__ + '/smali'
 
     # R文件路径
     __PROJECT_TEMP_PATH__ = __APKS_PATH__ + '/temp'

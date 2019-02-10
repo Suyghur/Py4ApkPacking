@@ -36,32 +36,62 @@ class BaseChannel:
     # 拷贝tool/channels/渠道/assets目录的文件(如果存在)至apks/output/assets目录
     @staticmethod
     def copyAssets(_channelAssetsPath):
-        print 'copyAssets'
-        return True
+        if FileToolKit.copyFile(_channelAssetsPath, GlobalStaticVars.__OUTPUT_ASSETS_PATH__):
+            print 'copyAssets success'
+            return True
+        else:
+            print 'copyAssets fail'
+            return True
 
     # 拷贝tool/channels/渠道/res目录的文件(如果存在)至apks/output/res目录
     @staticmethod
     def copyRes(_channelResPath):
-        print 'copyRes'
-        return True
+        if FileToolKit.copyFile(_channelResPath, GlobalStaticVars.__OUTPUT_RES_PATH__):
+            print 'copyAssets success'
+            return True
+        else:
+            print 'copyAssets fail'
+            return True
 
     # 拷贝tool/channels/渠道/lib目录的文件(如果存在)至apks/output/lib目录
     @staticmethod
     def copyLib(_channelLibPath):
-        print 'copyLib'
-        return True
+        if FileToolKit.copyFile(_channelLibPath, GlobalStaticVars.__OUTPUT_LIB_PATH__):
+            print 'copyLib success'
+            return True
+        else:
+            print 'copyLib fail'
+            return False
 
     # 拷贝tool/channels/渠道/smali目录的文件至apks/output/smali目录
     @staticmethod
     def copySmali(_channelSmaliPath):
-        print 'copySmali'
-        return True
+        if FileToolKit.copyFile(_channelSmaliPath, GlobalStaticVars.__OUTPUT_SMALI_PATH__):
+            print 'copySmali success'
+            return True
+        else:
+            print 'copySmali fail'
+            return False
 
     # 替换AndroidManifest.xml中的特殊permission和application节点
     @staticmethod
     def replacePermissionAndApplicationNode(_permissionConfig, _applicationConfig):
-        print 'replacePermissionAndApplicationNode'
-        return True
+        try:
+            with open(_permissionConfig, 'r') as f:
+                permission = f.read()
+            with open(_applicationConfig, 'r') as f:
+                application = f.read()
+            with open('/Users/suyghur/Android/test.xml', 'r') as f:
+                androidManifest = f.read()
+            with open('/Users/suyghur/Android/test.xml', 'w') as f:
+                androidManifest = androidManifest.replace('<kkkwan>kkkwan_special_permission</kkkwan>', permission)
+                androidManifest = androidManifest.replace('<kkkwan>kkkwan_special_application</kkkwan>', application)
+                f.write(androidManifest)
+            print 'replacePermissionAndApplicationNode success'
+            return True
+        except Exception, e:
+            print 'replacePermissionAndApplicationNode fail , error msg ' + str(e)
+            return False
 
     # 获取并处理通用渠道参数配置
     @staticmethod
