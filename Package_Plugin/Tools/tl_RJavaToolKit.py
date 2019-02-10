@@ -2,8 +2,8 @@
 # Created by #Suyghur, on 2019-02-06.
 # Copyright (c) 2019 3KWan.
 # Description : the toolkit of create the R file
-from Package_Plugin.Tools import FileToolKit
 from Package_Plugin.Tools.tl_CmdToolKit import CmdToolKit
+from Package_Plugin.Tools.tl_FileToolKit import FileToolKit
 from Package_Plugin.mod_GlobalStaticVars import GlobalStaticVars
 
 
