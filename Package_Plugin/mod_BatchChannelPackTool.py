@@ -2,6 +2,7 @@
 # Created by #Suyghur, on 2019-01-12.
 # Copyright (c) 2019 3KWan.
 # Description :
+from Package_Plugin import GlobalStaticVars
 from Package_Plugin.Channels import *
 from Package_Plugin.Tools.tl_ApkToolKit import ApkToolKit
 from Package_Plugin.Tools.tl_KKKToolKit import KKKToolKit
@@ -23,7 +24,7 @@ class BatchChannelPackTool:
     def prePackingEnv():
         # 反编译母包
         print '反编译母包'
-        if ApkToolKit.decompileApk('a', 'b', 'c'):
+        if ApkToolKit.decompileApk('a', GlobalStaticVars.__OUTPUT_PATH__, 'c'):
             print '反编译母包成功'
         else:
             print '反编译母包失败'
@@ -47,7 +48,6 @@ class BatchChannelPackTool:
         base.modifyChannelConfig()
         # 回编译并签名
         base.generateChannelApk()
-
         return True
 
     @staticmethod
