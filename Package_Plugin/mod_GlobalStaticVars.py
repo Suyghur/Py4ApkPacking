@@ -32,6 +32,7 @@ class GlobalStaticVars:
     # 输出目录
     __APKS_PATH__ = '/{0}'.format(int(time.time()))
     __OUTPUT_PATH__ = __APKS_PATH__ + '/out'
+    __OUTPUT_ANDROIDMANIFEST_PATH__ = __OUTPUT_PATH__ + '/AndroidManifest.xml'
     __OUTPUT_ASSETS_PATH__ = __OUTPUT_PATH__ + '/assets'
     __OUTPUT_RES_PATH__ = __OUTPUT_PATH__ + '/res'
     __OUTPUT_LIB_PATH__ = __OUTPUT_PATH__ + '/lib'

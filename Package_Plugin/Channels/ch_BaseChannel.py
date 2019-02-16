@@ -81,9 +81,9 @@ class BaseChannel:
                 permission = f.read()
             with open(_applicationConfig, 'r') as f:
                 application = f.read()
-            with open('/Users/suyghur/Android/test.xml', 'r') as f:
+            with open(GlobalStaticVars.__OUTPUT_ANDROIDMANIFEST_PATH__, 'r') as f:
                 androidManifest = f.read()
-            with open('/Users/suyghur/Android/test.xml', 'w') as f:
+            with open(GlobalStaticVars.__OUTPUT_ANDROIDMANIFEST_PATH__, 'w') as f:
                 androidManifest = androidManifest.replace('<kkkwan>kkkwan_special_permission</kkkwan>', permission)
                 androidManifest = androidManifest.replace('<kkkwan>kkkwan_special_application</kkkwan>', application)
                 f.write(androidManifest)
@@ -96,6 +96,7 @@ class BaseChannel:
     # 获取并处理通用渠道参数配置
     @staticmethod
     def dealCommonChannelConfig(_channelConfig, _isMoreIcon=False):
+
         print 'dealCommonChannelConfig'
         return True
 
