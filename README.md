@@ -1,141 +1,338 @@
-# 1.概要说明
+## 摘要说明
 
-由于Python源码部署的特性、实际业务中需要隔离两端的代码、客户端打包逻辑变动频率高等原因，Web版的Android批量打包工具整体设计如下：
+**修订记录** 
 
-1)采用“插件式”开发模式，提供宿主和插件package。
+| 日期 | 版本 | 说明 | 作者 |
+| :---: | :---: | :---: | :----: |
+| 2020-02-24 | 1.0.0 | 1.Fast-Auto接口文档建立 | 麦锦培 |
 
-2)线上服务端php调用宿主端完成一整套打包流程，无需关注内部具体逻辑实现。宿主端是一个“壳”程序，内部打包流程定型，无特殊原因不会修改。
+**工作方式** 
 
-3)插件端是具体打包逻辑的实现，更新频繁
+- 双方通过HTTP方式交互数据。即通过HTTP的POST/ GET方式交互
+- 双方需要保证数据传输的完整和安全性，每次请求都必须有响应（响应返回格式为json纯文本或者get方式提交数据供返回）
 
-4)原理实现：利用Python的反射机制，预加载和运行时加载相应包的模块中的类。其中运用到了`__import__()`和`importlib`模块中的`import_module()`方法。
+**返回值说明**
 
-动态装载
+- code是返回状态标示符，0是成功，其他是错误。
+- msg是返回状态说明。
+- result是返回数据，如果没有返回数据，result字段内容为空。
 
-```python
-# 动态装载
-# @param _moduleName : 模块名
-# @param _clzName : 类名
-# @param _packageName : 包名
-# @return 类对象
-def dynamicLoadingPlugin(self, _moduleName, _clzName, _packageName=Package_Plugin):
-    mod = importlib.import_module('.' + _moduleName, _packageName)
-    return getattr(mod, _clzName)
+**错误码对应表**
+
+| code | 含义 | 说明 |
+| :---: | :---: | :---: |
+|  0   | 请求成功，没有错误 | 表示接口返回正确值 |
+|  >0  | 请求失败，请求参数异常 | 表示接口请求参数错误,其他错误 |
+
+
+
+## 通用接口说明
+
+**简要描述** 
+
+- 接口的加密解密描述，请求连接的格式：` http://xxx.xxx.xxx/?ct=xxx&ac=xxx&p={密文}&ts={原始raw_key} `
+
+**请求方式** 
+
+- p和ts用post方式请求
+
+**加解密流程说明** 
+
+- 加密流程：
+	1）当前时间戳+10位长度Digits(0-9)随机数进行32位小写的md5加密得到原始秘钥raw_key
+	2）把原始秘钥raw_key正序和倒序拼接成64位长度字符串进行16位小写的md5加密得到AES秘钥aes_key
+	3）使用AES秘钥aes_key对数据进行AES/CBC/PKCS5Padding加密得到数据密文p
+	
+- 解密流程：
+	1）把原始秘钥raw_key正序和倒序拼接成64位长度字符串进行16位小写的md5加密得到AES秘钥aes_key
+	2）使用秘钥aes_key对加密的数据进行解密。得到数据原文
+
+- 图示：
+![QQ20200226-103002.png](https://i.loli.net/2020/02/26/nVCaSkcdyHsT3i2.png)
+
+- AES加密配置：
+	1）必须为秘钥长度16字节(128bit)或者32字节(256bit)
+	2）初始向量IV的生成算法。对长度16字节(128bit)或者32字节(256bit)的秘钥进行倒序。例如：AES秘钥为 0123456789abcdef , 则IV为 fedcba9876543210
+	3）加解密方法及PADDING为: AES/CBC/PKCS5Padding
+
+**返回值示例**
+
+```json
+{
+    "code":"0",
+    "msg":"xxxx",
+    "data":{
+        "p":"{密文}",
+        "ts":"{原始raw_key}"
+    }
+}
+```
+- code是返回状态标示符。0是成功，其他是错误。
+- msg是返回状态说明。code为0的时候是空，code为其他的时候是错误信息。
+- data是返回加密数据，如果没有返回数据，就没有data字段。
+- ts是原始raw_key
+
+**公共参数**
+
+- 接口公共参数common：
+
+| 参数名 | 必须 | 非空 |  类型 | 说明 |
+| :---: | :---: | :---: | :---: | :---: |
+| class_type | 是 | 是 | int | 业务类型：1.国内发行;2.海外发行;3.独立发行 |
+| server_version | 是 | 是 | string | 服务端版本 |
+| client_version | 是 | 是 | string | 客户端版本 |
+| ext | 是 | 否 | json | 扩展参数 |
+
+
+
+## 任务请求接口
+
+**简要描述** 
+
+- 任务请求规则：
+	1）上一条任务完成或中断时请求
+	2）客户端空闲>=2min时开启定时轮询，以2min为一个执行单元
+
+**请求Url** 
+
+- `http://xxx.xxx.xxx/?ct=xxx&ac=xxx&p={密文}&ts={原始raw_key}`
+
+**请求参数**
+
+| 参数名 | 必须 | 非空 |  类型 | 说明 |
+| :---: | :---: | :---: | :---: | :---: |
+| task_id | 是 | 否 | string | 上一次打包任务id |
+| ext | 是 | 否 | json | 扩展参数 |
+
+**请求示例**
+
+```json
+{
+    "task_id": "1234",
+    "ext": ""
+}
 ```
 
-静态装载
+**返回参数** 
 
-```python
-# 静态装载
-# @param _moduleName : 模块名
-# @param _clzName : 类名
-# @param _packName : 包名
-# @return 类对象
-def preLoadingPlugin(self, _moduleName, _clzName, _packageName='Module_Plugin'):
-    mod = __import__(_packageName + "." + _moduleName, fromlist=[_clzName])
-    return getattr(mod, _clzName)
+- result
+
+| 参数名 | 必须 | 非空 |  类型 | 说明 |
+| :---: | :---: | :---: | :---: | :---: |
+| task_info | 是 | 是 | json | 任务信息 |
+|  - task_id | 是 | 是 | string | 任务id |
+|  - is_majia | 是 | 是 | int | 是否打马甲包 |
+|  - is_white_bag | 是 | 是 | int | 是否打白包 |
+|  - is_debug_bag | 是 | 是 | int | 是否打debug包 |
+|  - has_plugin_sdk | 是 | 是 | int | 是否打媒体包 |
+| bag_info | 是 | 是 | json | 母包信息 |
+| - group_id | 是 | 是 | json | 母包游戏组id |
+| - game_id | 是 | 是 | string | 母包游戏id |
+| - version_code | 是 | 是 | string | 母包版本号 |
+| - version_name | 是 | 是 | string | 母包游戏名 |
+| - file_name | 是 | 是 | string | 母包文件名 |
+| - file_url | 是 | 是 | string | 母包文件url |
+| - file_md5 | 是 | 是 | string | 母包文件md5 |
+| sdk_info | 是 | 是 | json | sdk信息 |
+| - common_sdk | 是 | 是 | json | 融合sdk信息 |
+| -- version | 是 | 是 | string | 融合sdk版本 |
+| -- file_name | 是 | 是 | string | 融合sdk文件名 |
+| -- file_url | 是 | 是 | string | 融合sdk文件url |
+| -- file_md5 | 是 | 是 | string | 融合sdk文件md5 |
+| - channel_sdk | 是 | 是 | json | 渠道sdk信息 |
+| -- version | 是 | 是 | string | 渠道sdk版本 |
+| -- file_name | 是 | 是 | string | 渠道sdk文件名 |
+| -- file_url | 是 | 是 | string | 渠道sdk文件url |
+| -- file_md5 | 是 | 是 | string | 渠道sdk文件MD5 |
+| - plugin_sdk | 是 | 否 | json | 媒体插件sdk信息 |
+| -- （plugin_interface_name） | 是 | 是 | json | 媒体插件sdk类型 |
+| --- version | 是 | 是 | string | 媒体插件sdk版本 |
+| --- file_name | 是 | 是 | string | 媒体插件sdk文件名 |
+| --- file_url | 是 | 是 | string | 媒体插件sdk文件url |
+| --- file_md5 | 是 | 是 | string | 媒体插件sdk文件md5 |
+| keystore_info | 是 | 是 | json | 签名文件信息 |
+| - keystore_name | 是 | 是 | string | 签名文件名 |
+| - keystore_password | 是 | 是 | string | 签名文件密码 |
+| - keystore_alias | 是 | 是 | string | 签名文件别名 |
+| - keystore_alias_password | 是 | 是 | string | 签名文件别名密码 |
+| task_info | 是 | 是 | string | 签名文件url |
+| - file_md | 是 | 是 | string | 签名文件md5 |
+| params_info | 是 | 是 | json | 参数信息 |
+| - common_params | 是 | 是 | json | 融合参数信息 |
+| -- game_id | 是 | 是 | string | 游戏id |
+| -- package-chanle | 是 | 是 | json | 拿包id-分发id |
+| -- total | 是 | 是 | int | 子包个数 |
+| -- channel_name | 是 | 是 | string | 渠道名 |
+| -- channel_id | 是 | 是 | string | 渠道id |
+| -- deploy_id | 是 | 是 | json | 渠道配置id |
+| - channel_info | 是 | 是 | json | 渠道参数信息 |
+| - plugin_params | 是 | 否 | json | 媒体插件参数信息 |
+| - game_params | 是 | 是 | json | 游戏参数信息 |
+| -- game_package_name | 是 | 是 | string | 游戏包名 |
+| -- game_name | 是 | 是 | string | 游戏名 |
+| -- game_version_code | 是 | 是 | string | 游戏版本号 |
+| -- game_version_name | 是 | 是 | string | 游戏版本名 |
+| -- game_orientation | 是 | 是 | int | 游戏横竖屏配置：0.横屏；1.竖屏 |
+| -- game_icon_url | 是 | 否 | string | 游戏icon文件url |
+| -- game_logo_url | 是 | 否 | string | 游戏logo文件url |
+| -- game_splash_url | 是 | 否 | string | 游戏闪屏文件url |
+| -- game_background_url | 是 | 否 | string | 游戏登录页背景文件url |
+| -- game_loading_url | 是 | 否 | string | 游戏加载图文件url |
+| -- game_resource_url | 是 | 否 | string | 游戏特殊资源文件url |
+| ext | 是 | 否 | json | 扩展参数 |
+
+**返回示例** 
+
+```json
+{
+    "code": 0,
+    "msg": "",
+    "result": {
+        "task_info": {
+            "task_id": "1234",
+            "is_majia": "0",
+            "is_white_bag": "0",
+            "is_debug_bag": "0",
+            "has_plugin_sdk": "1"
+        },
+        "bag_info": {
+            "group_id": "7",
+            "game_id": "92",
+          	"version_code": "100",
+            "version_name": "1.0.0",
+            "file_name": "xcqy_100.apk",
+            "file_url": "http://xcqy_100.apk",
+            "file_md5": "aabbaabbaabbaabbaabbaabbaabbaabb"
+        },
+        "sdk_info": {
+            "common_sdk": {
+                "version": "6.0.3_media",
+                "file_name": "6.0.3_media_1582689753.zip",
+                "file_url": "http://6.0.3_media_1582689753.zip",
+                "file_md5": "aabbaabbaabbaabbaabbaabbaabbaabb"
+            },
+            "channel_sdk": {
+                "version": "4.7.0",
+                "file_name": "3k_1582689753.zip",
+                "file_url": "http://6.0.3_media_1582689753.zip",
+                "file_md5": "aabbaabbaabbaabbaabbaabbaabbaabb"
+            },
+            "plugin_sdk": {
+                "toutiao_plugin": {
+                    "version": "2.0.6",
+                    "file_name": "Toutiao_EventTracking_2.0.6_1579160694.zip",
+                    "file_md5": "d283a45f341a9d28421dedbf9f7a27ed",
+                    "file_url": "http://Toutiao_EventTracking_2.0.6_1579160694.zip"
+                },
+                "gdt_action_plugin": {
+                    "version": "1.5.0",
+                    "file_name": "GDT_Action_1.5.0_1578586437.zip",
+                    "file_md5": "e8dfb222de998671697be3896f71f569",
+                    "file_url": "http://20200116/GDT_Action_1.5.0_1578586437.zip.zip"
+                }
+            }
+        },
+        "keystore_info": {
+            "keystore_name": "lzzdy_3k2018.keystore",
+            "keystore_password": "lzzdyjkb_3k2018",
+            "keystore_alias": "alias.lzzdy_3k2018",
+            "keystore_alias_password ": "lzzdyjkb_3k2018",
+            "file_url": "http: //1569296395/lzzdy_3k2018.keystore",
+            "file_md5": "aabbaabbaabbaabbaabbaabbaabbaabb"
+        },
+        "params_info": {
+            "common_params": {
+                "game_id": "123456",
+                "package_chanle": {
+                    "30494": "30494",
+                    "30495": "30495",
+                    "30496": "30496",
+                    "30497": "30497",
+                    "30498": "30498"
+                },
+                "total": 5,
+                "channel_name": "3k",
+                "channel_id": "0",
+                "deploy_id": ""
+            },
+            "channel_params": {},
+            "plugin_params": {
+                "toutiao_plugin": {
+                    "FUSE_SS_ENABLE": "true",
+                    "FUSE_SS_APP_ID": "168277",
+                    "FUSE_SS_APP_NAME": "scbtb_xcqy12",
+                    "FUSE_SS_APP_CHANNEL": "scbtb_xcqy12"
+                },
+                "gdt_action_plugin": {
+                    "FUSE_GDT_ACTION_ENABLE": "true",
+                    "FUSE_GDT_ACTION_SET_ID": "1109810298",
+                    "FUSE_GDT_ACTION_SECRET_KEY": "5964c391dcf1909db0afb7ed5f905089"
+                }
+            },
+            "game_params": {
+                "game_package_name": "com.scbtb.kkkwan12",
+                "game_name": "神宠BT版",
+                "game_version_code": "340000",
+                "game_version_name": "2.6.0",
+                "game_orientation": "0",
+                "game_icon_url": "http: //8cb96b124b033f68d9633934103992cb_1541400072.png",
+                "game_logo_url": "https://upload_oeaclugrhh8fa3qjxv37rxk0e2gj4lhl.png",
+                "game_splash_url": "",
+                "game_background_url": "",
+                "game_loading_url": "",
+                "game_resource_url": ""
+            },
+            "ext": {}
+        }
+    }
+}
 ```
 
-# 2.Demo
-
-1)工程目录
-
-python4apkpacking
-
-​	--Module_Host
-
-​		--main.py
-
-​		--PluginHelper.py
-
-​	--Module_Plugin
-
-​		--Plugin1.py
-
-​		--Plugin2.py
 
 
+## 任务状态上报接口
 
-2)main.py
+**简要描述**
 
-```python
-from PluginsHelper import PluginsManager
+- 任务打包的状态上报，如果失败时会上传对应的log日志
 
-if __name__ == '__main__':
-    # ----- 启动时加载 ------
-    # no params
-    # mod1=__import__('Module_Plugin.Plugin1',fromlist=('Plugin1'))
-    # clz1=getattr(mod1,'Plugin1')
-    # clz1().PluginPrint()
+**请求url**
 
-    # ------ 使用时加载 ------
-    # no params
-    # mod3 = importlib.import_module('.Plugin1', 'Module_Plugin')
-    # clz3=getattr(mod3,'Plugin1')
-    # clz3().PluginPrint()
+- `http://xxx.xxx.xxx/?ct=xxx&ac=xxx&p={密文}&ts={原始raw_key}`
 
-    # have params
-    # mod4 = importlib.import_module('.Plugin2', 'Module_Plugin')
-    # mod4.PluginPrintWithParam('123')
+**请求参数**
 
-    # ------ 使用时加载 ------
-    manager = PluginsManager()
-    mod1 = manager.DynamicLoadingPlugin('Plugin1', 'Plugin1')
-    mod1().PluginPrint()
+| 参数名 | 必须 | 非空 |  类型 | 说明 |
+| :---: | :---: | :---: | :---: | :---: |
+| task_id | 是 | 是 | string | 任务id |
+| package_id | 是 | 是 | string | 子包的包id |
+| status_code | 是 | 是 | int | 状态码：0.失败；1.成功 |
+| bag_url | 是 | 否 | string | 打包成功后生成的云链url |
+| ext | 是 | 否 | json | 扩展参数 |
 
-    # ------ 启动时加载 ------
-    mod2 = manager.PreLoadingPlugin('Plugin2', 'Plugin2')
-    mod2().PluginPrintWithParam('123')
+**请求示例**
+
+```json
+{
+    "task_id": "1234",
+    "package_id":"2020",
+    "status_code": 1,
+    "bag_url": "https://abc/xxx.apk",
+    "ext": {}
+}
 ```
 
+**返回参数**
 
+- 无
 
-3)PluginHelper.py
+**返回示例**
 
-```python
-import importlib
-
-
-class PluginsManager():
-
-    # 动态装载
-    # @param _moduleName : 模块名
-    # @param _clzName : 类名
-    # @param _packageName : 包名
-    # @return 类对象
-    def DynamicLoadingPlugin(self, _moduleName, _clzName, _packageName='Module_Plugin'):
-        mod = importlib.import_module('.' + _moduleName, _packageName)
-        return getattr(mod, _clzName)
-
-    # 静态装载
-    # @param _moduleName : 模块名
-    # @param _clzName : 类名
-    # @param _packName : 包名
-    # @return 类对象
-    def PreLoadingPlugin(self, _moduleName, _clzName, _packageName='Module_Plugin'):
-        mod = __import__(_packageName + "." + _moduleName, fromlist=[_clzName])
-        return getattr(mod, _clzName)
-```
-
-
-
-4)Plugin1.py
-
-```python
-class Plugin1:
-
-    def PluginPrint(self):
-        print 'i am plugin1'
-```
-
-
-
-5)Plugin2.py
-
-```python
-class Plugin2:
-
-    def PluginPrintWithParam(self,param):
-        print 'i am plugin , the param is ' + param
+```json
+{
+    "code":0,
+    "msg":"",
+    "result":{}
+}
 ```
 

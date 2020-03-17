@@ -1,0 +1,7 @@
+goto-statement
+Crypto
+tqdm
+requests
+pycryptodome
+upyun
+pillow
